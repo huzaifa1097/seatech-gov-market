@@ -4,26 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, ShieldCheck, Package, TrendingUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CustomerTypeModal from "@/components/CustomerTypeModal";
-import { useState, useEffect } from "react";
 import heroBanner from "@/assets/hero-banner.jpg";
 import chairsImg from "@/assets/category-chairs.jpg";
 import furnitureImg from "@/assets/category-furniture.jpg";
 import plasticImg from "@/assets/category-plastic.jpg";
 
 const Index = () => {
-  const [showCustomerTypeModal, setShowCustomerTypeModal] = useState(false);
-
-  useEffect(() => {
-    const customerType = localStorage.getItem('customerType');
-    if (!customerType) {
-      setShowCustomerTypeModal(true);
-    }
-  }, []);
-
-  const handleSelectCustomerType = (type: 'bulk' | 'retail') => {
-    localStorage.setItem('customerType', type);
-  };
   const categories = [
     {
       name: "Office Chairs",
@@ -66,11 +52,6 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <CustomerTypeModal 
-        open={showCustomerTypeModal} 
-        onClose={() => setShowCustomerTypeModal(false)}
-        onSelectType={handleSelectCustomerType}
-      />
 
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div

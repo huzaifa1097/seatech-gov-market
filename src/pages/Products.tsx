@@ -6,19 +6,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Package } from "lucide-react";
+import CustomerTypeModal from "@/components/CustomerTypeModal";
 
 const Products = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const searchQuery = searchParams.get("search");
   const [customerType, setCustomerType] = useState<'bulk' | 'retail'>('retail');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const storedType = localStorage.getItem('customerType') as 'bulk' | 'retail' | null;
     if (storedType) {
       setCustomerType(storedType);
+    } else {
+      setShowModal(true);
     }
   }, []);
+
+  const handleSelectType = (type: 'bulk' | 'retail') => {
+    setCustomerType(type);
+    localStorage.setItem('customerType', type);
+  };
 
   const products = [
     {
@@ -94,6 +103,11 @@ const Products = () => {
 
   return (
     <div className="min-h-screen">
+      <CustomerTypeModal 
+        open={showModal} 
+        onClose={() => setShowModal(false)}
+        onSelectType={handleSelectType}
+      />
       <Navbar />
 
       <div className="container mx-auto px-4 py-12">
