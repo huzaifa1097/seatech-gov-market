@@ -7,13 +7,22 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
-    { name: "Buyer Application", path: "/buyer-application" },
+    { name: "Dealer Application", path: "/dealer-application" },
     { name: "Contact", path: "/contact" },
     { name: "Location", path: "/location" },
   ];
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur shadow-subtle">
@@ -71,12 +80,16 @@ const Navbar = () => {
 
         {isSearchOpen && (
           <div className="pb-4 animate-in slide-in-from-top-2">
-            <input
-              type="search"
-              placeholder="Search for products..."
-              className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-              autoFocus
-            />
+            <form onSubmit={handleSearch}>
+              <input
+                type="search"
+                placeholder="Search for products..."
+                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </form>
           </div>
         )}
       </div>

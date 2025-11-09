@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +10,15 @@ import { Package } from "lucide-react";
 const Products = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
+  const [customerType, setCustomerType] = useState<'bulk' | 'retail'>('retail');
+
+  useEffect(() => {
+    const storedType = localStorage.getItem('customerType') as 'bulk' | 'retail' | null;
+    if (storedType) {
+      setCustomerType(storedType);
+    }
+  }, []);
 
   const products = [
     {
@@ -62,9 +71,20 @@ const Products = () => {
     },
   ];
 
-  const filteredProducts = category
-    ? products.filter((p) => p.category === category)
-    : products;
+  let filteredProducts = products;
+  
+  if (category) {
+    filteredProducts = filteredProducts.filter((p) => p.category === category);
+  }
+  
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filteredProducts = filteredProducts.filter((p) => 
+      p.name.toLowerCase().includes(query) || 
+      p.description.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query)
+    );
+  }
 
   const categoryNames: Record<string, string> = {
     chairs: "Office Chairs",
@@ -77,13 +97,26 @@ const Products = () => {
       <Navbar />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">
-            {category ? categoryNames[category] : "All Products"}
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Browse our government-approved product catalog
-          </p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold mb-4">
+              {searchQuery ? `Search Results for "${searchQuery}"` : category ? categoryNames[category] : "All Products"}
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              {customerType === 'retail' ? 'Browse and shop individual pieces' : 'Request quotes for bulk orders'}
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              const newType = customerType === 'retail' ? 'bulk' : 'retail';
+              setCustomerType(newType);
+              localStorage.setItem('customerType', newType);
+            }}
+            className="shadow-subtle"
+          >
+            Switch to {customerType === 'retail' ? 'Bulk' : 'Retail'}
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -101,10 +134,21 @@ const Products = () => {
                 </div>
                 <p className="text-muted-foreground mb-4">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">{product.price}</span>
-                  <Button disabled={!product.inStock} className="gradient-primary border-0">
-                    Request Quote
-                  </Button>
+                  {customerType === 'retail' ? (
+                    <>
+                      <span className="text-2xl font-bold text-primary">{product.price}</span>
+                      <Button disabled={!product.inStock} className="gradient-primary border-0">
+                        Add to Cart
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg font-semibold text-muted-foreground">Price on Request</span>
+                      <Button disabled={!product.inStock} className="gradient-primary border-0">
+                        Request Quote
+                      </Button>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>

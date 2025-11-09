@@ -4,12 +4,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, ShieldCheck, Package, TrendingUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CustomerTypeModal from "@/components/CustomerTypeModal";
+import { useState, useEffect } from "react";
 import heroBanner from "@/assets/hero-banner.jpg";
 import chairsImg from "@/assets/category-chairs.jpg";
 import furnitureImg from "@/assets/category-furniture.jpg";
 import plasticImg from "@/assets/category-plastic.jpg";
 
 const Index = () => {
+  const [showCustomerTypeModal, setShowCustomerTypeModal] = useState(false);
+
+  useEffect(() => {
+    const customerType = localStorage.getItem('customerType');
+    if (!customerType) {
+      setShowCustomerTypeModal(true);
+    }
+  }, []);
+
+  const handleSelectCustomerType = (type: 'bulk' | 'retail') => {
+    localStorage.setItem('customerType', type);
+  };
   const categories = [
     {
       name: "Office Chairs",
@@ -52,6 +66,11 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <CustomerTypeModal 
+        open={showCustomerTypeModal} 
+        onClose={() => setShowCustomerTypeModal(false)}
+        onSelectType={handleSelectCustomerType}
+      />
 
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div
@@ -79,9 +98,9 @@ const Index = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/buyer-application">
+              <Link to="/dealer-application">
                 <Button size="lg" variant="outline" className="shadow-subtle hover:shadow-medium transition-smooth">
-                  Apply as Buyer
+                  Become a Dealer
                 </Button>
               </Link>
             </div>
@@ -141,9 +160,9 @@ const Index = () => {
           <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
             Join our network of trusted government buyers and access quality products with seamless procurement.
           </p>
-          <Link to="/buyer-application">
+          <Link to="/dealer-application">
             <Button size="lg" className="gradient-primary border-0 shadow-medium hover:shadow-strong transition-smooth">
-              Submit Buyer Application
+              Become a Dealer
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
